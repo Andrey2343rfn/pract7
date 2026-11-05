@@ -1,0 +1,44 @@
+rule "Calculate temperature and humidity statistics"
+when
+    Item LivingRoom_Temperature changed or
+    Item Bedroom_Temperature changed or
+    Item Kitchen_Temperature changed or
+    Item LivingRoom_Humidity changed or
+    Item Bedroom_Humidity changed or
+    Item Kitchen_Humidity changed
+then
+    val t1 = (LivingRoom_Temperature.state as Number).doubleValue
+    val t2 = (Bedroom_Temperature.state as Number).doubleValue
+    val t3 = (Kitchen_Temperature.state as Number).doubleValue
+    val h1 = (LivingRoom_Humidity.state as Number).doubleValue
+    val h2 = (Bedroom_Humidity.state as Number).doubleValue
+    val h3 = (Kitchen_Humidity.state as Number).doubleValue
+    val avgTemp = (t1 + t2 + t3) / 3.0
+    val minTemp = Math.min(t1, Math.min(t2, t3))
+    val maxTemp = Math.max(t1, Math.max(t2, t3))
+    val avgHumidity = (h1 + h2 + h3) / 3.0
+    Average_Temperature.postUpdate(avgTemp)
+    Min_Temperature.postUpdate(minTemp)
+    Max_Temperature.postUpdate(maxTemp)
+    Average_Humidity.postUpdate(avgHumidity)
+    if ((maxTemp - minTemp) > 5) {
+        logWarn("TemperatureAlert", "Temperature anomaly detected!")
+    }
+end
+
+rule "Calculate hourly average temperature"
+when
+    Time cron "0 0 * * * ?"
+then
+    val a1 = LivingRoom_Temperature.averageSince(now.minusHours(1))
+    val a2 = Bedroom_Temperature.averageSince(now.minusHours(1))
+    val a3 = Kitchen_Temperature.averageSince(now.minusHours(1))
+    if (a1 !== null && a2 !== null && a3 !== null) {
+        val hourlyAvg = (
+            (a1 as Number).doubleValue +
+            (a2 as Number).doubleValue +
+            (a3 as Number).doubleValue
+        ) / 3.0
+        Hourly_Average_Temperature.postUpdate(hourlyAvg)
+    }
+end

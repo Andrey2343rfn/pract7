@@ -1,0 +1,12 @@
+Strategies {
+    everyMinute : "0 * * * * ?"
+}
+
+Items {
+    LivingRoom_Temperature,
+    LivingRoom_Humidity,
+    Bedroom_Temperature,
+    Bedroom_Humidity,
+    Kitchen_Temperature,
+    Kitchen_Humidity : strategy = everyChange, everyMinute, restoreOnStartup
+}

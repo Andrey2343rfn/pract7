@@ -1,0 +1,12 @@
+sitemap home label="IoT Monitoring" {
+    Frame label="Температура за час" {
+        Chart item=LivingRoom_Temperature period=h refresh=60000
+        Chart item=Bedroom_Temperature period=h refresh=60000
+        Chart item=Kitchen_Temperature period=h refresh=60000
+    }
+    Frame label="Температура за сутки" {
+        Chart item=LivingRoom_Temperature period=D refresh=60000
+        Chart item=Bedroom_Temperature period=D refresh=60000
+        Chart item=Kitchen_Temperature period=D refresh=60000
+    }
+}
